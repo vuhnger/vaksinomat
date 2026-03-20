@@ -115,11 +115,16 @@ describe("scheduleVaccines", () => {
     const rec = recommendations[0];
     expect(rec.certificateValidFrom).toBeDefined();
 
-    // Certificate should be 10 days after today
+    // Certificate should be today + 10 days – compare ISO date strings (no time component)
     const today = new Date();
-    const certDate = new Date(rec.certificateValidFrom!);
-    const diff = Math.round((certDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    expect(diff).toBe(10);
+    const expected = new Date(today);
+    expected.setDate(today.getDate() + 10);
+    const expectedStr = [
+      expected.getFullYear(),
+      String(expected.getMonth() + 1).padStart(2, "0"),
+      String(expected.getDate()).padStart(2, "0"),
+    ].join("-");
+    expect(rec.certificateValidFrom).toBe(expectedStr);
   });
 
   test("Rabies 3-dosesplan: dag 0, 7, 21", () => {

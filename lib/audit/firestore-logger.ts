@@ -6,7 +6,7 @@ let db: FirebaseFirestore.Firestore | null = null;
 async function getDb(): Promise<FirebaseFirestore.Firestore> {
   if (db) return db;
 
-  const { initializeApp, getApps, cert } = await import("firebase-admin/app");
+  const { initializeApp, getApps } = await import("firebase-admin/app");
   const { getFirestore } = await import("firebase-admin/firestore");
 
   if (getApps().length === 0) {
@@ -15,10 +15,13 @@ async function getDb(): Promise<FirebaseFirestore.Firestore> {
       throw new Error("GOOGLE_CLOUD_PROJECT environment variable is required");
     }
     initializeApp({ projectId });
+    // settings() must be called before any Firestore operations and only once
+    db = getFirestore();
+    db.settings({ ignoreUndefinedProperties: true });
+  } else {
+    db = getFirestore();
   }
 
-  db = getFirestore();
-  db.settings({ ignoreUndefinedProperties: true });
   return db;
 }
 
@@ -90,9 +93,10 @@ export async function getPendingReviews(): Promise<Consultation[]> {
   const snapshot = await firestore
     .collection("consultations")
     .where("status", "==", "pending_review")
-    .orderBy("createdAt", "desc")
     .limit(50)
     .get();
 
-  return snapshot.docs.map((doc) => doc.data() as Consultation);
+  const results = snapshot.docs.map((doc) => doc.data() as Consultation);
+  results.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return results;
 }
