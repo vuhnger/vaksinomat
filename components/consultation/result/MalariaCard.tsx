@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MalariaRecommendation } from "@/lib/types";
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 import { Bug } from "lucide-react";
 
 interface MalariaCardProps {

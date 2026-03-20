@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { PatientData } from "@/lib/types";
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 
 interface Step5Props {
   data: Partial<PatientData>;

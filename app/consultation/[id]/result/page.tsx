@@ -5,7 +5,7 @@ import { VaccineCard } from "@/components/consultation/result/VaccineCard";
 import { MalariaCard } from "@/components/consultation/result/MalariaCard";
 import { CopyJournalButton } from "@/components/consultation/result/CopyJournalButton";
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 

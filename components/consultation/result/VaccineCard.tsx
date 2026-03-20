@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { VaccineRecommendation } from "@/lib/types";
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 

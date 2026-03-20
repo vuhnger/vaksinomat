@@ -2,7 +2,7 @@ import { getPendingReviews } from "@/lib/audit/firestore-logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 import type { Consultation } from "@/lib/types";
 
 function formatDate(isoStr: string): string {

@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import nb from "date-fns/locale/nb";
+import { nb } from "date-fns/locale";
 import type { PatientData, RecommendationResult, VaccineRecommendation } from "@/lib/types";
 
 function formatNorwegianDate(isoDate: string): string {
