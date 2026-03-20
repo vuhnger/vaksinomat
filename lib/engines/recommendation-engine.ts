@@ -67,6 +67,23 @@ const YELLOW_FEVER_REQUIRED_COUNTRIES = new Set([
   "NG", "RW", "SN", "SL", "SO", "SS", "SD", "TG", "TZ", "UG", "ZM"
 ]);
 
+const UNIVERSAL_TRAVEL_VACCINES: Array<{
+  vaccineId: string;
+  level: "required" | "strongly_recommended" | "recommended" | "consider";
+  reason: string;
+}> = [
+  {
+    vaccineId: "dtap",
+    level: "recommended",
+    reason: "Pass på at grunnvaksinasjon og oppfriskningsdoser for dTP-IPV er oppdatert for utenlandsreise.",
+  },
+  {
+    vaccineId: "mmr",
+    level: "recommended",
+    reason: "Pass på at MMR-vaksinasjon er oppdatert for utenlandsreise.",
+  },
+];
+
 function getMalariaProhylaxisId(malariaRisk: string): string {
   // Default to Malarone for most destinations
   switch (malariaRisk) {
@@ -120,8 +137,14 @@ export function runRecommendationEngine(
   const highExposure =
     enrichedPatient.accommodationType === "local" ||
     enrichedPatient.localContact === "extensive";
+  const hasDestinationSpecificRisk = countries.some(
+    (country) =>
+      country.riskProfiles.length > 0 ||
+      country.yellowFeverRequirement === "required" ||
+      country.yellowFeverRecommended
+  );
 
-  if (highExposure) {
+  if (highExposure && hasDestinationSpecificRisk) {
     // Upgrade rabies from "consider" to "recommended" for high exposure
     allRiskProfiles.add("rabies");
     allRiskProfiles.add("hepatitis_b");
@@ -133,6 +156,10 @@ export function runRecommendationEngine(
     level: "required" | "strongly_recommended" | "recommended" | "consider";
     reason: string;
   }> = [];
+
+  if (countries.length > 0) {
+    candidates.push(...UNIVERSAL_TRAVEL_VACCINES);
+  }
 
   for (const riskProfile of allRiskProfiles) {
     const mapping = RISK_PROFILE_VACCINES[riskProfile];

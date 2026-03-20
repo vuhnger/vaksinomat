@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { VaccineRecommendation } from "@/lib/types";
 import { format, parseISO } from "date-fns";
 import { nb } from "date-fns/locale";
-import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowRight, CheckCircle2, ShieldPlus, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VaccineCardProps {
@@ -16,29 +16,34 @@ function formatDate(isoDate: string): string {
 
 const LEVEL_CONFIG = {
   required: {
-    label: "PÅKREVD",
-    variant: "destructive" as const,
-    className: "border-l-4 border-l-red-500",
+    label: "Påkrevd",
+    badge: "destructive" as const,
+    accent: "from-red-500 to-rose-500",
+    surface: "border-red-200 bg-red-50/70",
   },
   strongly_recommended: {
-    label: "STERKT ANBEFALT",
-    variant: "default" as const,
-    className: "border-l-4 border-l-blue-500",
+    label: "Sterkt anbefalt",
+    badge: "default" as const,
+    accent: "from-sky-500 to-cyan-500",
+    surface: "border-sky-200 bg-sky-50/70",
   },
   recommended: {
-    label: "ANBEFALT",
-    variant: "secondary" as const,
-    className: "border-l-4 border-l-green-500",
+    label: "Anbefalt",
+    badge: "secondary" as const,
+    accent: "from-emerald-500 to-teal-500",
+    surface: "border-emerald-200 bg-emerald-50/70",
   },
   consider: {
-    label: "VURDER",
-    variant: "outline" as const,
-    className: "border-l-4 border-l-yellow-500",
+    label: "Vurder",
+    badge: "outline" as const,
+    accent: "from-amber-400 to-orange-400",
+    surface: "border-amber-200 bg-amber-50/70",
   },
   not_recommended: {
-    label: "ANBEFALES IKKE",
-    variant: "outline" as const,
-    className: "border-l-4 border-l-gray-400",
+    label: "Anbefales ikke",
+    badge: "outline" as const,
+    accent: "from-slate-400 to-slate-500",
+    surface: "border-slate-200 bg-slate-50/70",
   },
 };
 
@@ -46,66 +51,84 @@ export function VaccineCard({ recommendation: rec }: VaccineCardProps) {
   const config = LEVEL_CONFIG[rec.level];
 
   return (
-    <Card className={cn("mb-3", config.className)}>
-      <CardContent className="pt-4 pb-4">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="font-semibold text-base">{rec.displayNameNo}</h3>
-          <Badge variant={config.variant}>{config.label}</Badge>
+    <Card className={cn("overflow-hidden border shadow-sm", config.surface)}>
+      <div className={cn("h-1 w-full bg-gradient-to-r", config.accent)} />
+      <CardContent className="space-y-5 p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <ShieldPlus className="h-4 w-4" />
+              Reiseplan for vaksine
+            </div>
+            <h3 className="text-xl font-semibold tracking-tight">{rec.displayNameNo}</h3>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{rec.reason}</p>
+          </div>
+          <Badge variant={config.badge}>{config.label}</Badge>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-3">{rec.reason}</p>
-
         {rec.scheduleVariant === "accelerated" && (
-          <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded mb-3">
-            Akselerert skjema valgt pga. kort tid til avreise
-          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Akselerert skjema valgt på grunn av kort tid til avreise.
+          </div>
         )}
 
-        <div className="space-y-1.5">
-          {rec.datedDoses.map((dose) => (
-            <div
-              key={dose.doseNumber}
-              className="flex items-center justify-between text-sm"
-            >
-              <span className="text-muted-foreground">{dose.label}</span>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{formatDate(dose.targetDate)}</span>
-                {dose.feasible ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-amber-500" />
+        <div className="rounded-2xl border border-border/70 bg-white/80 p-4 sm:p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <p className="text-sm font-medium text-foreground">Roadmap frem mot avreise</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Doser i rekkefølge</p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-4">
+            {rec.datedDoses.map((dose, index) => (
+              <div key={dose.doseNumber} className="flex flex-col sm:flex-row sm:flex-1 sm:items-center sm:gap-4">
+                <div className="flex min-w-0 flex-1 items-start gap-3 rounded-2xl border border-border bg-background px-4 py-4 shadow-sm">
+                  <div
+                    className={cn(
+                      "mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
+                      dose.feasible ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                    )}
+                  >
+                    {dose.feasible ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+                  </div>
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-sm font-semibold text-foreground">{dose.label}</p>
+                    <p className="text-lg font-semibold tracking-tight">{formatDate(dose.targetDate)}</p>
+                    <p
+                      className={cn(
+                        "text-sm",
+                        dose.daysBeforeTravel >= 0 ? "text-muted-foreground" : "font-medium text-red-600"
+                      )}
+                    >
+                      {dose.daysBeforeTravel >= 0
+                        ? `${dose.daysBeforeTravel} dager for avreise`
+                        : `${Math.abs(dose.daysBeforeTravel)} dager etter avreise`}
+                    </p>
+                    {dose.note && <p className="text-xs text-muted-foreground">{dose.note}</p>}
+                  </div>
+                </div>
+
+                {index < rec.datedDoses.length - 1 && (
+                  <div className="flex justify-center py-2 text-muted-foreground sm:px-1 sm:py-0">
+                    <ArrowDown className="h-5 w-5 sm:hidden" />
+                    <ArrowRight className="hidden h-5 w-5 sm:block" />
+                  </div>
                 )}
-                <span
-                  className={cn(
-                    "text-xs",
-                    dose.daysBeforeTravel >= 0
-                      ? "text-muted-foreground"
-                      : "text-red-600 font-medium"
-                  )}
-                >
-                  {dose.daysBeforeTravel >= 0
-                    ? `${dose.daysBeforeTravel}d før avreise`
-                    : `${Math.abs(dose.daysBeforeTravel)}d etter avreise`}
-                </span>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {rec.certificateValidFrom && (
-          <div className="mt-3 p-2 bg-blue-50 rounded text-sm">
-            <span className="text-blue-800">
-              Gulfeberrsertifikat gyldig fra:{" "}
-              <strong>{formatDate(rec.certificateValidFrom)}</strong>
-            </span>
+          <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            Sertifikatet er gyldig fra <span className="font-semibold">{formatDate(rec.certificateValidFrom)}</span>.
           </div>
         )}
 
         {rec.contraindications.length > 0 && (
-          <div className="mt-3 space-y-1">
+          <div className="space-y-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
             {rec.contraindications.map((ci, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-sm text-red-700">
-                <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <div key={idx} className="flex items-start gap-2 text-sm text-red-800">
+                <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>{ci.description}</span>
               </div>
             ))}

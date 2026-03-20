@@ -45,7 +45,14 @@ export function getCandidateVaccineIds(
   }
 
   const highExposure = accommodationType === "local" || localContact === "extensive";
-  if (highExposure) {
+  const hasDestinationSpecificRisk = relevantCountries.some(
+    (country) =>
+      country.riskProfiles.length > 0 ||
+      country.yellowFeverRequirement === "required" ||
+      country.yellowFeverRecommended
+  );
+
+  if (highExposure && hasDestinationSpecificRisk) {
     riskProfiles.add("rabies");
     riskProfiles.add("hepatitis_b");
   }
