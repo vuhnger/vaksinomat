@@ -28,16 +28,14 @@ export async function POST(
       dynamicAnswers ?? {}
     );
 
-    // Generate AI advisory note if doctor review required
-    if (result.requiresDoctorReview && process.env.GEMINI_API_KEY) {
-      try {
-        result.aiAdvisoryNote = await generateAdvisoryNote(result);
-      } catch (aiError) {
-        console.warn("AI advisory note generation failed:", aiError);
-      }
-    }
-
     await updateConsultationResult(params.id, result);
+
+    // Generate AI advisory note in background – does not block the response
+    if (result.requiresDoctorReview && process.env.GEMINI_API_KEY) {
+      generateAdvisoryNote(result)
+        .then((note) => updateConsultationResult(params.id, { ...result, aiAdvisoryNote: note }))
+        .catch((err) => console.warn("AI advisory note generation failed:", err));
+    }
 
     return NextResponse.json(result);
   } catch (error) {

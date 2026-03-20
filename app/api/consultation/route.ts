@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createConsultation } from "@/lib/audit/firestore-logger";
+import { createConsultation, updateConsultationResult } from "@/lib/audit/firestore-logger";
+import { runRecommendationEngine } from "@/lib/engines/recommendation-engine";
+import { generateAdvisoryNote } from "@/lib/gemini/fallback-advisor";
 import type { PatientData } from "@/lib/types";
 import { randomUUID } from "crypto";
 
@@ -42,7 +44,17 @@ export async function POST(request: NextRequest) {
 
     await createConsultation(id, patientData, patientData.nurseId);
 
-    return NextResponse.json({ id }, { status: 201 });
+    const result = runRecommendationEngine(id, patientData, {});
+    await updateConsultationResult(id, result);
+
+    // Generate AI advisory note in background – does not block the response
+    if (result.requiresDoctorReview && process.env.GEMINI_API_KEY) {
+      generateAdvisoryNote(result)
+        .then((note) => updateConsultationResult(id, { ...result, aiAdvisoryNote: note }))
+        .catch((err) => console.warn("AI advisory note generation failed:", err));
+    }
+
+    return NextResponse.json({ id, result }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

@@ -42,31 +42,18 @@ export default function NewConsultationPage() {
     setIsLoading(true);
     setErrorMsg("");
     try {
-      // Create consultation
-      const createRes = await fetch("/api/consultation", {
+      const res = await fetch("/api/consultation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!createRes.ok) {
-        const err = await createRes.json();
+      if (!res.ok) {
+        const err = await res.json();
         throw new Error(err.error ?? "Kunne ikke opprette konsultasjon");
       }
 
-      const { id } = await createRes.json();
-
-      // Run recommendation engine
-      const recRes = await fetch(`/api/consultation/${id}/recommend`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dynamicAnswers: {} }),
-      });
-
-      if (!recRes.ok) {
-        throw new Error("Kunne ikke generere anbefaling");
-      }
-
+      const { id } = await res.json();
       router.push(`/consultation/${id}/result`);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "En feil oppstod");
