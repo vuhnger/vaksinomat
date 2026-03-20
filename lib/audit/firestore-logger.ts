@@ -22,9 +22,10 @@ async function getDb(): Promise<FirebaseFirestore.Firestore> {
   return db;
 }
 
-export async function createConsultation(
+export async function saveConsultation(
   id: string,
   patientData: PatientData,
+  result: RecommendationResult,
   nurseId?: string
 ): Promise<void> {
   const firestore = await getDb();
@@ -33,8 +34,9 @@ export async function createConsultation(
   const consultation: Consultation = {
     id,
     patientData,
-    status: "draft",
-    requiresDoctorReview: false,
+    result,
+    status: result.requiresDoctorReview ? "pending_review" : "approved",
+    requiresDoctorReview: result.requiresDoctorReview,
     nurseId,
     createdAt: now,
     updatedAt: now,
@@ -50,15 +52,12 @@ export async function updateConsultationResult(
   const firestore = await getDb();
   const now = new Date().toISOString();
 
-  await firestore
-    .collection("consultations")
-    .doc(id)
-    .update({
-      result,
-      requiresDoctorReview: result.requiresDoctorReview,
-      status: result.requiresDoctorReview ? "pending_review" : "approved",
-      updatedAt: now,
-    });
+  await firestore.collection("consultations").doc(id).update({
+    result,
+    requiresDoctorReview: result.requiresDoctorReview,
+    status: result.requiresDoctorReview ? "pending_review" : "approved",
+    updatedAt: now,
+  });
 }
 
 export async function getConsultation(id: string): Promise<Consultation | null> {
