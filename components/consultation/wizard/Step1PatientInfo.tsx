@@ -5,21 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PatientData, AllergyType } from "@/lib/types";
+import type { PatientData } from "@/lib/types";
 
 interface Step1Props {
   data: Partial<PatientData>;
   onNext: (data: Partial<PatientData>) => void;
 }
-
-const ALLERGY_OPTIONS: { value: AllergyType; label: string }[] = [
-  { value: "egg", label: "Egg" },
-  { value: "gelatin", label: "Gelatin" },
-  { value: "latex", label: "Latex" },
-  { value: "neomycin", label: "Neomycin" },
-  { value: "yeast", label: "Gjær" },
-  { value: "other", label: "Annet" },
-];
 
 export function Step1PatientInfo({ data, onNext }: Step1Props) {
   const [birthYear, setBirthYear] = useState(data.birthYear?.toString() ?? "");
@@ -27,16 +18,7 @@ export function Step1PatientInfo({ data, onNext }: Step1Props) {
   const [isImmunocompromised, setIsImmunocompromised] = useState(
     data.isImmunocompromised ?? false
   );
-  const [allergies, setAllergies] = useState<AllergyType[]>(data.allergies ?? []);
   const [error, setError] = useState("");
-
-  function toggleAllergy(allergy: AllergyType) {
-    setAllergies((prev) =>
-      prev.includes(allergy)
-        ? prev.filter((a) => a !== allergy)
-        : [...prev, allergy]
-    );
-  }
 
   function handleNext() {
     const year = parseInt(birthYear, 10);
@@ -45,12 +27,7 @@ export function Step1PatientInfo({ data, onNext }: Step1Props) {
       return;
     }
     setError("");
-    onNext({
-      birthYear: year,
-      isPregnant,
-      isImmunocompromised,
-      allergies,
-    });
+    onNext({ birthYear: year, isPregnant, isImmunocompromised });
   }
 
   return (
@@ -98,26 +75,6 @@ export function Step1PatientInfo({ data, onNext }: Step1Props) {
             <label htmlFor="immunocompromised" className="text-sm">
               Pasient er immunsupprimert
             </label>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <Label>Kjente allergier (valgfritt)</Label>
-          <div className="grid grid-cols-2 gap-2">
-            {ALLERGY_OPTIONS.map((option) => (
-              <div key={option.value} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`allergy-${option.value}`}
-                  checked={allergies.includes(option.value)}
-                  onChange={() => toggleAllergy(option.value)}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <label htmlFor={`allergy-${option.value}`} className="text-sm">
-                  {option.label}
-                </label>
-              </div>
-            ))}
           </div>
         </div>
 

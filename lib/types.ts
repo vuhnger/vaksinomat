@@ -21,6 +21,7 @@ export interface PreviousVaccination {
   vaccineId: string;
   lastDoseYear?: number;
   completed?: boolean;
+  dosesCompleted?: number;
 }
 
 export interface Destination {

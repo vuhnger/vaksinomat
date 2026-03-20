@@ -8,6 +8,7 @@ import { Step2TravelInfo } from "@/components/consultation/wizard/Step2TravelInf
 import { Step3Exposure } from "@/components/consultation/wizard/Step3Exposure";
 import { Step4VaccineHistory } from "@/components/consultation/wizard/Step4VaccineHistory";
 import { Step5Summary } from "@/components/consultation/wizard/Step5Summary";
+import { getCandidateVaccineIds } from "@/lib/data/client-candidates";
 import type { PatientData } from "@/lib/types";
 
 const STEPS = [
@@ -30,22 +31,39 @@ export default function NewConsultationPage() {
     accommodationType: "hotel",
     localContact: "minimal",
   });
+  const [candidateVaccineIds, setCandidateVaccineIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   function handleStepData(data: Partial<PatientData>) {
-    setFormData((prev) => ({ ...prev, ...data }));
-    setCurrentStep((s) => s + 1);
+    const updated = { ...formData, ...data };
+    setFormData(updated);
+
+    // Recompute candidates after step 2 (destinations) or step 3 (exposure) changes
+    const nextStep = currentStep + 1;
+    if (currentStep >= 2) {
+      const destinations = updated.destinations ?? [];
+      const accommodation = updated.accommodationType ?? "hotel";
+      const contact = updated.localContact ?? "minimal";
+      if (destinations.length > 0) {
+        setCandidateVaccineIds(getCandidateVaccineIds(destinations, accommodation, contact));
+      }
+    }
+
+    setCurrentStep(nextStep);
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(data: Partial<PatientData>) {
     setIsLoading(true);
     setErrorMsg("");
     try {
+      const payload = { ...formData, ...data };
+      setFormData(payload);
+
       const res = await fetch("/api/consultation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -85,10 +103,7 @@ export default function NewConsultationPage() {
         )}
 
         {currentStep === 1 && (
-          <Step1PatientInfo
-            data={formData}
-            onNext={handleStepData}
-          />
+          <Step1PatientInfo data={formData} onNext={handleStepData} />
         )}
         {currentStep === 2 && (
           <Step2TravelInfo
@@ -109,6 +124,7 @@ export default function NewConsultationPage() {
             data={formData}
             onNext={handleStepData}
             onBack={() => setCurrentStep(3)}
+            candidateVaccineIds={candidateVaccineIds}
           />
         )}
         {currentStep === 5 && (
@@ -117,6 +133,7 @@ export default function NewConsultationPage() {
             onSubmit={handleSubmit}
             onBack={() => setCurrentStep(4)}
             isLoading={isLoading}
+            candidateVaccineIds={candidateVaccineIds}
           />
         )}
       </main>

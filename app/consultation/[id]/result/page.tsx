@@ -8,6 +8,11 @@ import { format, parseISO } from "date-fns";
 import { nb } from "date-fns/locale";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getVaccines } from "@/lib/data/loader";
+
+function getHumanReadableVaccineName(vaccineNameMap: Record<string, string>, vaccineId: string): string {
+  return vaccineNameMap[vaccineId] ?? "Ukjent vaksine";
+}
 
 interface Props {
   params: { id: string };
@@ -21,6 +26,7 @@ export default async function ResultPage({ params }: Props) {
   }
 
   const result = consultation.result;
+  const vaccineNameMap = Object.fromEntries(getVaccines().map((v) => [v.id, v.displayNameNo]));
   const departureFormatted = format(
     parseISO(result.patientData.departureDate),
     "d. MMMM yyyy",
@@ -100,7 +106,7 @@ export default async function ResultPage({ params }: Props) {
                   className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700"
                 >
                   <p className="font-medium">{ci.description}</p>
-                  <p className="mt-1">Berørte vaksiner: {ci.affectedVaccineIds.join(", ")}</p>
+                  <p className="mt-1">Berørte vaksiner: {ci.affectedVaccineIds.map((id) => getHumanReadableVaccineName(vaccineNameMap, id)).join(", ")}</p>
                 </div>
               ))}
             </div>

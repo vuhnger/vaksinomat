@@ -162,8 +162,21 @@ export function runRecommendationEngine(
   // Deduplicate candidates (keep highest level)
   const deduped = deduplicateCandidates(candidates);
 
+  // Filter out vaccines the patient has already completed
+  const completedIds = new Set(
+    enrichedPatient.previousVaccinations
+      .filter((v) => v.completed === true)
+      .map((v) => v.vaccineId)
+  );
+  // If hep_ab is complete, both hep_a and hep_b are covered
+  if (completedIds.has("hep_ab")) {
+    completedIds.add("hep_a");
+    completedIds.add("hep_b");
+  }
+  const filteredCandidates = deduped.filter((c) => !completedIds.has(c.vaccineId));
+
   // Check contraindications
-  const candidateIds = deduped.map((c) => c.vaccineId);
+  const candidateIds = filteredCandidates.map((c) => c.vaccineId);
   const { contraindications, internkontrollFlags, requiresDoctorReview, blockedVaccineIds } =
     checkContraindications(candidateIds, enrichedPatient);
 
@@ -176,7 +189,7 @@ export function runRecommendationEngine(
 
   // Schedule vaccines
   const { recommendations, conflicts: _conflicts } = scheduleVaccines(
-    deduped,
+    filteredCandidates,
     enrichedPatient,
     blockedVaccineIds
   );

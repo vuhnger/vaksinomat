@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "tsx scripts/run-tests.ts",
     "test:unit": "jest --testPathPattern='scheduling|contraindication'",
     "test:api": "jest --testPathPattern='__tests__/api'",
     "validate-data": "npx tsx scripts/validate-data.ts"
