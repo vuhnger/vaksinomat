@@ -25,6 +25,29 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
   const [vaccinations, setVaccinations] = useState<PreviousVaccination[]>(
     data.previousVaccinations ?? []
   );
+  const [doseYearInputs, setDoseYearInputs] = useState<Record<string, string>>(
+    Object.fromEntries(
+      (data.previousVaccinations ?? []).map((vaccination) => [
+        vaccination.vaccineId,
+        vaccination.lastDoseYear?.toString() ?? "",
+      ])
+    )
+  );
+  const minDoseYear = data.birthYear ?? 1900;
+  const maxDoseYear = new Date().getFullYear();
+
+  function getNormalizedDoseYear(year: string): number | undefined {
+    if (!/^\d{4}$/.test(year)) {
+      return undefined;
+    }
+
+    const parsedYear = parseInt(year, 10);
+    if (parsedYear < minDoseYear || parsedYear > maxDoseYear) {
+      return undefined;
+    }
+
+    return parsedYear;
+  }
 
   function getEntry(id: string): PreviousVaccination | undefined {
     return vaccinations.find((v) => v.vaccineId === id);
@@ -39,7 +62,7 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
   }
 
   function getYear(id: string): string {
-    return getEntry(id)?.lastDoseYear?.toString() ?? "";
+    return doseYearInputs[id] ?? getEntry(id)?.lastDoseYear?.toString() ?? "";
   }
 
   function toggleSingleDose(id: string) {
@@ -47,6 +70,14 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
       const has = prev.some((v) => v.vaccineId === id);
       if (has) return prev.filter((v) => v.vaccineId !== id);
       return [...prev, { vaccineId: id, completed: true }];
+    });
+    setDoseYearInputs((prev) => {
+      if (isChecked(id)) {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return prev;
     });
   }
 
@@ -64,15 +95,44 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
         },
       ];
     });
+    if (doses === 0) {
+      setDoseYearInputs((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    }
   }
 
   function setDoseYear(id: string, year: string) {
-    const y = parseInt(year, 10);
+    setDoseYearInputs((prev) => ({ ...prev, [id]: year }));
+  }
+
+  function commitDoseYear(id: string) {
+    const normalizedYear = getNormalizedDoseYear(getYear(id));
+
     setVaccinations((prev) =>
       prev.map((v) =>
-        v.vaccineId === id ? { ...v, lastDoseYear: isNaN(y) ? undefined : y } : v
+        v.vaccineId === id
+          ? {
+              ...v,
+              lastDoseYear: normalizedYear,
+            }
+          : v
       )
     );
+
+    setDoseYearInputs((prev) => ({
+      ...prev,
+      [id]: normalizedYear?.toString() ?? "",
+    }));
+  }
+
+  function getSubmissionVaccinations(): PreviousVaccination[] {
+    return vaccinations.map((vaccination) => ({
+      ...vaccination,
+      lastDoseYear: getNormalizedDoseYear(doseYearInputs[vaccination.vaccineId] ?? ""),
+    }));
   }
 
   function renderVaccineRow(vac: { id: string; label: string }) {
@@ -121,13 +181,14 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
           <div className="mt-1.5 flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Siste dose:</span>
             <Input
-              placeholder="År (f.eks. 2020)"
+              placeholder={`År fra ${minDoseYear}`}
               value={getYear(vac.id)}
               onChange={(e) => setDoseYear(vac.id, e.target.value)}
+              onBlur={() => commitDoseYear(vac.id)}
               className="w-32 h-7 text-sm"
               type="number"
-              min="1950"
-              max={new Date().getFullYear()}
+              min={minDoseYear}
+              max={maxDoseYear}
             />
           </div>
         )}
@@ -188,7 +249,7 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
             Tilbake
           </Button>
           <Button
-            onClick={() => onNext({ previousVaccinations: vaccinations })}
+            onClick={() => onNext({ previousVaccinations: getSubmissionVaccinations() })}
             className="flex-1"
           >
             Neste: Allergier og bekreftelse
