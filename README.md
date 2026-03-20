@@ -6,7 +6,7 @@ Veiledet reisevaksinasjonskonsultasjon for sykepleiere hos Dr. Dropin. Erstatter
 
 ```bash
 cp .env.local.example .env.local
-# Fyll inn ANTHROPIC_API_KEY og GOOGLE_CLOUD_PROJECT
+# Fyll inn GOOGLE_CLOUD_PROJECT
 
 npm install
 npm run dev
@@ -38,21 +38,22 @@ vaksinomat/
 │   └── malaria-prophylaxis.json   # Malarone, Doksysyklin, Lariam
 ├── scripts/
 │   ├── validate-data.ts           # CI-validering av JSON-data
-│   ├── bootstrap-countries.ts     # Engangskjøring: Playwright + Claude Haiku
-│   └── update-fhi-data.ts         # Månedlig: diff + GitHub PR
+│   ├── fhi-source.ts              # Deterministisk FHI-scraping og seksjonsuttrekk
+│   ├── bootstrap-countries.ts     # Lager draft-data fra FHI-sider uten AI
+│   └── update-fhi-data.ts         # Månedlig: scrape + diff + reviewrapport
 └── __tests__/                     # Unit-tester for medisinsk logikk
 ```
 
 ## Kjøre tester
 
 ```bash
-npm test               # Unit-tester (scheduling, kontraindikasjoner)
+npm test               # Starter testserver automatisk og kjører hele testpakken
 npm run validate-data  # Validerer vaccines.json og countries.json mot Zod-skjema
 ```
 
 ## Medisinsk logikk
 
-All vaksinasjonslogikk er **regelbasert** – Gemini brukes kun som rådgivende merknad ved flaggede saker, og i bootstrap/oppdateringsskript.
+All vaksinasjonslogikk er **regelbasert**. AI brukes ikke til å generere landdata eller anbefalinger i produktet.
 
 ### Planleggingsregler
 
@@ -106,12 +107,12 @@ Vaksin- og landdata er statisk JSON versjonskontrollert i Git og bakt inn i Dock
 ```
 Cloud Scheduler (1./mnd)
   → Cloud Run Job kjører scripts/update-fhi-data.ts
-      → Playwright scraper FHI-landssider
-      → Claude Haiku parser endringer
+      → Deterministisk scraping av FHI-landssider
+      → Seksjonsuttrekk og strukturert diff uten AI
       → Diff mot gjeldende countries.json
-      → Oppretter GitHub PR
-  → Medisinsk gjennomgang av diff
-  → Godkjenn og merge → automatisk deploy
+      → Review av endringer før oppdatering
+   → Medisinsk gjennomgang av diff
+   → Godkjenn og merge → automatisk deploy
 ```
 
 **Legge til nytt land manuelt:**
@@ -123,7 +124,6 @@ Cloud Scheduler (1./mnd)
 
 | Variabel | Beskrivelse |
 |---|---|
-| `GEMINI_API_KEY` | Gemini API-nøkkel (Flash for advisory notes ved flaggede saker) |
 | `GOOGLE_CLOUD_PROJECT` | GCP prosjekt-ID (Firestore) |
 | `GITHUB_TOKEN` | GitHub PAT for PR-oppretting (kun update-script) |
 | `GITHUB_REPO` | Format: `org/repo` (kun update-script) |
