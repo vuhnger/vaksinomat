@@ -75,12 +75,12 @@ const UNIVERSAL_TRAVEL_VACCINES: Array<{
   {
     vaccineId: "dtap",
     level: "recommended",
-    reason: "Pass pa at grunnvaksinasjon og oppfriskningsdoser for dTP-IPV er oppdatert for utenlandsreise.",
+    reason: "Pass på at grunnvaksinasjon og oppfriskningsdoser for dTP-IPV er oppdatert for utenlandsreise.",
   },
   {
     vaccineId: "mmr",
     level: "recommended",
-    reason: "Pass pa at MMR-vaksinasjon er oppdatert for utenlandsreise.",
+    reason: "Pass på at MMR-vaksinasjon er oppdatert for utenlandsreise.",
   },
 ];
 

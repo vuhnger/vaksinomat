@@ -124,9 +124,13 @@ function getSectionSlice(text: string, heading: string, nextHeadings: string[]):
 }
 
 export async function fetchFhiPageSnapshot(country: CountrySeed): Promise<FhiPageSnapshot> {
+  if (!country.slug?.trim()) {
+    throw new Error(`Fant ikke FHI-side for ${country.nameNo}. Kan ikke bygge URL fra ${FHI_BASE_URL}.`);
+  }
+
   const pageUrl = country.slug?.startsWith("http")
     ? country.slug
-    : `${FHI_BASE_URL}${country.slug ?? ""}`;
+    : `${FHI_BASE_URL}${country.slug}`;
   const response = await fetch(pageUrl, {
     headers: {
       "User-Agent": "Vaksinomat FHI sync/1.0",

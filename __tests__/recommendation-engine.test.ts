@@ -22,4 +22,26 @@ describe("recommendation engine", () => {
     expect(vaccineIds).not.toContain("rabies");
     expect(vaccineIds).not.toContain("hep_b");
   });
+
+  test("hoy eksponering i risikoland inkluderer rabies og hepatitt B", () => {
+    const result = runRecommendationEngine("test-id", {
+      birthYear: 1990,
+      isPregnant: false,
+      isImmunocompromised: false,
+      allergies: [],
+      destinations: [{ countryCode: "NG", countryName: "Nigeria", isLayover: false }],
+      departureDate: "2027-06-01",
+      returnDate: "2027-06-10",
+      accommodationType: "local",
+      localContact: "extensive",
+      previousVaccinations: [],
+    });
+
+    const vaccineIds = result.recommendations.map((rec) => rec.vaccineId);
+
+    expect(vaccineIds).toContain("dtap");
+    expect(vaccineIds).toContain("mmr");
+    expect(vaccineIds).toContain("rabies");
+    expect(vaccineIds).toContain("hep_b");
+  });
 });

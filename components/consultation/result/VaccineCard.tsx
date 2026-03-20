@@ -16,7 +16,7 @@ function formatDate(isoDate: string): string {
 
 const LEVEL_CONFIG = {
   required: {
-    label: "Pakrevd",
+    label: "Påkrevd",
     badge: "destructive" as const,
     accent: "from-red-500 to-rose-500",
     surface: "border-red-200 bg-red-50/70",
@@ -68,14 +68,14 @@ export function VaccineCard({ recommendation: rec }: VaccineCardProps) {
 
         {rec.scheduleVariant === "accelerated" && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            Akselerert skjema valgt pa grunn av kort tid til avreise.
+            Akselerert skjema valgt på grunn av kort tid til avreise.
           </div>
         )}
 
         <div className="rounded-2xl border border-border/70 bg-white/80 p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-sm font-medium text-foreground">Roadmap frem mot avreise</p>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Doser i rekkefolge</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Doser i rekkefølge</p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-4">

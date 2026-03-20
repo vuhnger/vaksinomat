@@ -33,8 +33,9 @@ export function Step4VaccineHistory({ data, onNext, onBack, candidateVaccineIds 
       ])
     )
   );
-  const minDoseYear = data.birthYear ?? 1900;
   const maxDoseYear = new Date().getFullYear();
+  const safeBirthYear = Math.min(data.birthYear ?? 1900, maxDoseYear);
+  const minDoseYear = safeBirthYear;
 
   function getNormalizedDoseYear(year: string): number | undefined {
     if (!/^\d{4}$/.test(year)) {

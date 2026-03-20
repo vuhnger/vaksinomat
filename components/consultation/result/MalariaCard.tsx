@@ -38,7 +38,7 @@ export function MalariaCard({ recommendation: rec }: MalariaCardProps) {
             <div className="flex-1 rounded-2xl border border-border bg-background px-4 py-4 shadow-sm">
               <p className="text-sm font-semibold">Start</p>
               <p className="mt-1 text-lg font-semibold tracking-tight">{formatDate(rec.startDate)}</p>
-              <p className="text-sm text-muted-foreground">Begynn for avreise</p>
+              <p className="text-sm text-muted-foreground">Begynn før avreise</p>
             </div>
 
             <div className="flex justify-center py-2 text-muted-foreground sm:py-0">

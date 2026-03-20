@@ -67,10 +67,10 @@ export default async function ResultPage({ params }: Props) {
               <div className="space-y-3">
                 <p className="text-sm font-medium uppercase tracking-[0.22em] text-sky-700">Anbefalingsplan</p>
                 <h1 className="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
-                  Her er et tydelig lop frem mot avreise
+                  Her er et tydelig løp frem mot avreise
                 </h1>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  Planen under viser hvilke tiltak som bor gjores, i hvilken rekkefolge, og nar de bor tas.
+                  Planen under viser hvilke tiltak som bør gjøres, i hvilken rekkefølge, og når de bør tas.
                 </p>
               </div>
 
@@ -116,10 +116,10 @@ export default async function ResultPage({ params }: Props) {
               <CardContent className="space-y-2 p-5">
                 <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                   <Stethoscope className="h-4 w-4" />
-                  Klinisk oppfolging
+                  Klinisk oppfølging
                 </div>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Planen er basert pa FHIs reisemedisinske anbefalinger. Endelig vurdering gjores i konsultasjonen.
+                  Planen er basert på FHIs reisemedisinske anbefalinger. Endelig vurdering gjøres i konsultasjonen.
                 </p>
               </CardContent>
             </Card>
@@ -130,14 +130,14 @@ export default async function ResultPage({ params }: Props) {
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">Roadmap</h2>
             <p className="text-sm text-muted-foreground">
-              Folg planen nedenfor fra topp til bunn. Hvert kort viser neste steg og datoer i tydelig rekkefolge.
+              Følg planen nedenfor fra topp til bunn. Hvert kort viser neste steg og datoer i tydelig rekkefølge.
             </p>
           </div>
 
           {roadmapCount === 0 ? (
             <Card className="border border-slate-200 bg-white/90 shadow-sm">
               <CardContent className="py-12 text-center text-muted-foreground">
-                <p className="text-lg">Ingen vaksiner eller profylakse er aktuelle for dette reisemalet.</p>
+                <p className="text-lg">Ingen vaksiner eller profylakse er aktuelle for dette reisemålet.</p>
               </CardContent>
             </Card>
           ) : (
@@ -173,7 +173,7 @@ export default async function ResultPage({ params }: Props) {
                   <CardContent className="space-y-2 p-4 text-sm text-red-900">
                     <p className="font-medium">{ci.description}</p>
                     <p>
-                      Berorte vaksiner: {ci.affectedVaccineIds.map((id) => getHumanReadableVaccineName(vaccineNameMap, id)).join(", ")}
+                      Berørte vaksiner: {ci.affectedVaccineIds.map((id) => getHumanReadableVaccineName(vaccineNameMap, id)).join(", ")}
                     </p>
                   </CardContent>
                 </Card>
