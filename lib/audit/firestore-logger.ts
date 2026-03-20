@@ -18,6 +18,7 @@ async function getDb(): Promise<FirebaseFirestore.Firestore> {
   }
 
   db = getFirestore();
+  db.settings({ ignoreUndefinedProperties: true });
   return db;
 }
 
