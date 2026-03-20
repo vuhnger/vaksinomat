@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vaksinomat.no/schemas/countries.schema.json",
+  "title": "Countries",
+  "description": "Schema for the countries travel risk data array used in Vaksinomat",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/Country"
+  },
+  "definitions": {
+    "Country": {
+      "type": "object",
+      "required": [
+        "code",
+        "nameNo",
+        "riskProfiles",
+        "malariaRisk",
+        "yellowFeverRequirement",
+        "yellowFeverRecommended",
+        "lastScrapedDate",
+        "dataVersion"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "ISO 3166-1 alpha-2 country code"
+        },
+        "nameNo": {
+          "type": "string",
+          "description": "Country name in Norwegian"
+        },
+        "riskProfiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "hepatitis_a",
+              "hepatitis_b",
+              "typhoid",
+              "rabies",
+              "japanese_encephalitis",
+              "meningococcal",
+              "cholera"
+            ]
+          },
+          "description": "List of vaccine-preventable disease risk profile identifiers relevant for travellers"
+        },
+        "malariaRisk": {
+          "type": "string",
+          "enum": ["none", "low", "rural_only", "moderate", "high"],
+          "description": "Overall malaria risk level for the country"
+        },
+        "malariaZones": {
+          "type": ["string", "null"],
+          "description": "Norwegian-language description of malaria risk zones; null if malariaRisk is none"
+        },
+        "yellowFeverRequirement": {
+          "type": "string",
+          "enum": [
+            "none",
+            "required_if_from_endemic_country",
+            "required",
+            "recommended"
+          ],
+          "description": "Yellow fever entry or vaccination requirement for this country"
+        },
+        "yellowFeverRecommended": {
+          "type": "boolean",
+          "description": "True if yellow fever vaccination is recommended by FHI for travel to this country regardless of entry requirement"
+        },
+        "fhiPageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the FHI country-specific travel health page"
+        },
+        "lastScrapedDate": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date when this country data was last sourced or reviewed"
+        },
+        "dataVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of this country record's data format"
+        }
+      }
+    }
+  }
+}

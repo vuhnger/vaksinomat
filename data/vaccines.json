@@ -1,0 +1,234 @@
+[
+  {
+    "id": "hep_a",
+    "displayNameNo": "Hepatitt A",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Booster", "dayOffset": 180, "isBooster": true }
+      ],
+      "minDaysBeforeTravel": 0,
+      "notes": "Beskyttelse regnes fra dose 1. Booster etter 6–12 mnd gir langtidsbeskyttelse."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/hepatitt-a-vaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "hep_b",
+    "displayNameNo": "Hepatitt B",
+    "isLive": false,
+    "schedule": {
+      "standard": {
+        "doses": [
+          { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+          { "doseNumber": 2, "label": "Dose 2", "dayOffset": 30 },
+          { "doseNumber": 3, "label": "Dose 3", "dayOffset": 180 }
+        ],
+        "minDaysBeforeTravel": 0
+      },
+      "accelerated": {
+        "doses": [
+          { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+          { "doseNumber": 2, "label": "Dose 2", "dayOffset": 7 },
+          { "doseNumber": 3, "label": "Dose 3", "dayOffset": 21 },
+          { "doseNumber": 4, "label": "Booster", "dayOffset": 365, "isBooster": true }
+        ],
+        "minDaysBeforeTravel": 0
+      },
+      "minDaysBeforeTravel": 0,
+      "notes": "Akselerert schema ved kort tid til avreise (< 6 mnd)."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/hepatitt-b-vaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "hep_ab",
+    "displayNameNo": "Hepatitt A+B (kombinasjon)",
+    "isLive": false,
+    "schedule": {
+      "standard": {
+        "doses": [
+          { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+          { "doseNumber": 2, "label": "Dose 2", "dayOffset": 30 },
+          { "doseNumber": 3, "label": "Dose 3", "dayOffset": 180 }
+        ],
+        "minDaysBeforeTravel": 0
+      },
+      "accelerated": {
+        "doses": [
+          { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+          { "doseNumber": 2, "label": "Dose 2", "dayOffset": 7 },
+          { "doseNumber": 3, "label": "Dose 3", "dayOffset": 21 },
+          { "doseNumber": 4, "label": "Booster", "dayOffset": 365, "isBooster": true }
+        ],
+        "minDaysBeforeTravel": 0
+      },
+      "minDaysBeforeTravel": 0,
+      "notes": "Kombinasjonsvaksine mot Hepatitt A og B (Twinrix)."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/hepatitt-a-og-b-kombinasjonsvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "typhoid_inj",
+    "displayNameNo": "Tyfoid (injeksjon)",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 }
+      ],
+      "minDaysBeforeTravel": 14,
+      "notes": "Injeksjonsvaksine. Gir beskyttelse i 3 år."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/tyfoidvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "typhoid_oral",
+    "displayNameNo": "Tyfoid (oral)",
+    "isLive": true,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Kapsle 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Kapsle 2", "dayOffset": 2 },
+        { "doseNumber": 3, "label": "Kapsle 3", "dayOffset": 4 }
+      ],
+      "minDaysBeforeTravel": 7,
+      "notes": "Oral levende vaksine (Vivotif). Tas annenhver dag. Gir beskyttelse i 1 år."
+    },
+    "contraindications": ["immunocompromised", "pregnant"],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/tyfoidvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "yellow_fever",
+    "displayNameNo": "Gulfeber",
+    "isLive": true,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 }
+      ],
+      "minDaysBeforeTravel": 10,
+      "certificateValidFromDays": 10,
+      "notes": "Sertifikat gyldig fra dag 10 etter vaksinasjon. Livslang beskyttelse etter én dose."
+    },
+    "contraindications": ["pregnant", "immunocompromised", "egg_allergy", "age_under_9_months"],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/gulfeberkvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "rabies",
+    "displayNameNo": "Rabies (pre-eksponering)",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Dose 2", "dayOffset": 7 },
+        { "doseNumber": 3, "label": "Dose 3", "dayOffset": 21 }
+      ],
+      "minDaysBeforeTravel": 1,
+      "notes": "3 doser dag 0, 7 og 21–28. Fullfør minst 1 dag før avreise. CD4 < 200: absolutt KI."
+    },
+    "contraindications": ["hiv_low_cd4"],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/rabiesvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "japanese_encephalitis",
+    "displayNameNo": "Japansk encefalitt",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Dose 2", "dayOffset": 28 }
+      ],
+      "minDaysBeforeTravel": 10,
+      "notes": "2 doser med 4 ukers mellomrom. Siste dose minst 10 dager før avreise."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/japansk-encefalittvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "meningococcal",
+    "displayNameNo": "Meningokokkvaksine (ACWY)",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 }
+      ],
+      "minDaysBeforeTravel": 10,
+      "notes": "Obligatorisk for hajj/umra. Anbefales ved reise til meningittbeltet i Afrika."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/meningokokkvaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "cholera",
+    "displayNameNo": "Kolera / Dukoral",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Dose 2", "dayOffset": 7 }
+      ],
+      "minDaysBeforeTravel": 7,
+      "notes": "Oral inaktivert vaksine (Dukoral). 2 doser med minst 1 ukes mellomrom. Gir også noe beskyttelse mot ETEC-diaré."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/koleravaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "dtap",
+    "displayNameNo": "dTP (Difteri, Tetanus, Kikhoste)",
+    "isLive": false,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Oppfriskningsdose", "dayOffset": 0 }
+      ],
+      "minDaysBeforeTravel": 0,
+      "notes": "Oppfriskningsdose hvert 10. år anbefales. Sjekk vaksinasjonshistorikk."
+    },
+    "contraindications": [],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/difteri-tetanus-kikhoste-vaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "mmr",
+    "displayNameNo": "MMR (Meslinger, Kusma, Røde hunder)",
+    "isLive": true,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 }
+      ],
+      "minDaysBeforeTravel": 0,
+      "notes": "Levende vaksine. Sjekk vaksinasjonshistorikk – 2 doser gir livslang beskyttelse."
+    },
+    "contraindications": ["pregnant", "immunocompromised"],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/mmr-vaksine/",
+    "lastReviewedDate": "2024-01-01"
+  },
+  {
+    "id": "varicella",
+    "displayNameNo": "Varicella (Vannkopper)",
+    "isLive": true,
+    "schedule": {
+      "doses": [
+        { "doseNumber": 1, "label": "Dose 1", "dayOffset": 0 },
+        { "doseNumber": 2, "label": "Dose 2", "dayOffset": 42 }
+      ],
+      "minDaysBeforeTravel": 0,
+      "notes": "Levende vaksine. 2 doser med 6 ukers mellomrom for personer > 13 år."
+    },
+    "contraindications": ["pregnant", "immunocompromised"],
+    "fhiUrl": "https://www.fhi.no/va/vaksinasjonshandboka/vaksiner-fra-a-a/varicella-vaksine/",
+    "lastReviewedDate": "2024-01-01"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "malarone",
+    "displayNameNo": "Malarone (Atovaquon/Proguanil)",
+    "type": "prophylaxis",
+    "schedule": {
+      "startDaysBeforeTravel": 2,
+      "stopDaysAfterReturn": 7,
+      "notes": "Start 1–2 dager før avreise til malariaendemisk område. Slutt 7 dager etter retur. Tas daglig."
+    },
+    "contraindications": ["severe_renal_impairment"],
+    "fhiUrl": "https://www.fhi.no/sm/smittevernrad-ved-reiser/reiserad/malaria/"
+  },
+  {
+    "id": "doxycycline",
+    "displayNameNo": "Doksysyklin",
+    "type": "prophylaxis",
+    "schedule": {
+      "startDaysBeforeTravel": 2,
+      "stopDaysAfterReturn": 28,
+      "notes": "Start 1–2 dager før avreise. Slutt 28 dager etter retur. Tas daglig. Unngå sol."
+    },
+    "contraindications": ["pregnant", "age_under_8_years"],
+    "fhiUrl": "https://www.fhi.no/sm/smittevernrad-ved-reiser/reiserad/malaria/"
+  },
+  {
+    "id": "lariam",
+    "displayNameNo": "Lariam (Meflokvin)",
+    "type": "prophylaxis",
+    "schedule": {
+      "startDaysBeforeTravel": 18,
+      "stopDaysAfterReturn": 28,
+      "notes": "Start 18 dager (3 uker) før avreise for å teste toleranse. Slutt 28 dager etter retur. Tas ukentlig. Psykiatrisk KI."
+    },
+    "contraindications": ["psychiatric_history", "epilepsy", "pregnant_first_trimester"],
+    "fhiUrl": "https://www.fhi.no/sm/smittevernrad-ved-reiser/reiserad/malaria/"
+  }
+]

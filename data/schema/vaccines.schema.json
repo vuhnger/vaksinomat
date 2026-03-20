@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vaksinomat.no/schemas/vaccines.schema.json",
+  "title": "Vaccines",
+  "description": "Schema for the vaccines data array used in Vaksinomat",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/Vaccine"
+  },
+  "definitions": {
+    "Dose": {
+      "type": "object",
+      "required": ["doseNumber", "label", "dayOffset"],
+      "additionalProperties": false,
+      "properties": {
+        "doseNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Sequential dose number"
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable label for the dose"
+        },
+        "dayOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Days from the first dose (dose 1 is always 0)"
+        },
+        "isBooster": {
+          "type": "boolean",
+          "description": "True if this dose is a booster rather than a primary series dose"
+        }
+      }
+    },
+    "SimpleSchedule": {
+      "type": "object",
+      "required": ["doses", "minDaysBeforeTravel"],
+      "properties": {
+        "doses": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/Dose" }
+        },
+        "minDaysBeforeTravel": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum days before departure that the first dose must be given to achieve adequate protection"
+        },
+        "certificateValidFromDays": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Days after vaccination before an international certificate becomes valid (used for yellow fever)"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "MultiSchedule": {
+      "type": "object",
+      "required": ["minDaysBeforeTravel"],
+      "properties": {
+        "standard": { "$ref": "#/definitions/SimpleSchedule" },
+        "accelerated": { "$ref": "#/definitions/SimpleSchedule" },
+        "minDaysBeforeTravel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "Vaccine": {
+      "type": "object",
+      "required": ["id", "displayNameNo", "isLive", "schedule", "contraindications", "fhiUrl", "lastReviewedDate"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Unique identifier for the vaccine, snake_case"
+        },
+        "displayNameNo": {
+          "type": "string",
+          "description": "Human-readable vaccine name in Norwegian"
+        },
+        "isLive": {
+          "type": "boolean",
+          "description": "True if this is a live attenuated vaccine (relevant for contraindications)"
+        },
+        "schedule": {
+          "oneOf": [
+            { "$ref": "#/definitions/SimpleSchedule" },
+            { "$ref": "#/definitions/MultiSchedule" }
+          ]
+        },
+        "contraindications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "pregnant",
+              "immunocompromised",
+              "egg_allergy",
+              "age_under_9_months",
+              "age_under_8_years",
+              "hiv_low_cd4",
+              "severe_renal_impairment",
+              "psychiatric_history",
+              "epilepsy",
+              "pregnant_first_trimester"
+            ]
+          },
+          "description": "List of contraindication identifiers"
+        },
+        "fhiUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the FHI vaccine page"
+        },
+        "lastReviewedDate": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date of last clinical review"
+        }
+      }
+    }
+  }
+}
