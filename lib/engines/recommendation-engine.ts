@@ -3,6 +3,7 @@ import type {
   RecommendationResult,
   Country,
   DynamicQuestion,
+  VaccineRecommendation,
 } from "@/lib/types";
 import { getCountryByCode, getVaccines } from "@/lib/data/loader";
 import {
@@ -245,7 +246,7 @@ export function runRecommendationEngine(
   return {
     consultationId,
     patientData: enrichedPatient,
-    recommendations,
+    recommendations: sortRecommendations(recommendations),
     malariaRecommendation,
     contraindications,
     internkontrollFlags,
@@ -253,6 +254,18 @@ export function runRecommendationEngine(
     dynamicQuestions,
     generatedAt: new Date().toISOString(),
   };
+}
+
+function sortRecommendations(recommendations: VaccineRecommendation[]): VaccineRecommendation[] {
+  const levelOrder: Record<VaccineRecommendation["level"], number> = {
+    required: 0,
+    strongly_recommended: 1,
+    recommended: 2,
+    consider: 3,
+    not_recommended: 4,
+  };
+
+  return [...recommendations].sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
 }
 
 function applyDynamicAnswers(

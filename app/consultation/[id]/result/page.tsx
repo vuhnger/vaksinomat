@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { nb } from "date-fns/locale";
-import { ArrowDown, CalendarDays, MapPinned, ShieldCheck, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowDown, CalendarDays, MapPinned, ShieldCheck, Stethoscope } from "lucide-react";
 import { DoctorReviewBanner } from "@/components/consultation/result/DoctorReviewBanner";
 import { VaccineCard } from "@/components/consultation/result/VaccineCard";
 import { MalariaCard } from "@/components/consultation/result/MalariaCard";
@@ -77,6 +77,16 @@ export default function ResultPage() {
   });
   const destinations = result.patientData.destinations.map((d) => d.countryName).join(" -> ");
   const roadmapCount = result.recommendations.length + (result.malariaRecommendation ? 1 : 0);
+  const infeasibleRecommendations = result.recommendations.filter((rec) => !rec.feasible);
+  const combinedTimeline = result.recommendations
+    .flatMap((rec) =>
+      rec.datedDoses.map((dose) => ({
+        date: dose.targetDate,
+        label: `${rec.displayNameNo} - ${dose.label}`,
+        feasible: dose.feasible,
+      }))
+    )
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef6ff_40%,#f8fafc_100%)]">
@@ -102,6 +112,22 @@ export default function ResultPage() {
       <main className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:py-10">
         {result.requiresDoctorReview && (
           <DoctorReviewBanner flags={result.internkontrollFlags} aiNote={result.aiAdvisoryNote} />
+        )}
+
+        {infeasibleRecommendations.length > 0 && (
+          <section className="rounded-2xl border border-amber-300 bg-amber-50 p-5 shadow-sm">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700" />
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold tracking-tight text-amber-950">
+                  Ikke alle vaksiner rekker å bli ferdige før avreise
+                </h2>
+                <p className="text-sm leading-6 text-amber-900">
+                  Følgende tiltak har minst en dose som faller etter reisedato: {infeasibleRecommendations.map((rec) => rec.displayNameNo).join(", ")}. Planen bør gjennomgås med pasienten så forventninger og prioriteringer blir tydelige.
+                </p>
+              </div>
+            </div>
+          </section>
         )}
 
         <section className="grid gap-4 lg:grid-cols-[1.6fr_0.9fr]">
@@ -176,6 +202,38 @@ export default function ResultPage() {
               Følg planen nedenfor fra topp til bunn. Hvert kort viser neste steg og datoer i tydelig rekkefølge.
             </p>
           </div>
+
+          {combinedTimeline.length > 0 && (
+            <Card className="border border-slate-200 bg-white/90 shadow-sm">
+              <CardContent className="space-y-4 p-5 sm:p-6">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-semibold tracking-tight">Samlet datovisning</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Alle vaksinedatoer samlet i kronologisk rekkefølge.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {combinedTimeline.map((item) => (
+                    <div
+                      key={`${item.date}-${item.label}`}
+                      className="flex flex-col gap-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <p className="text-sm font-semibold text-slate-900">
+                        {format(parseISO(item.date), "d. MMMM yyyy", { locale: nb })}
+                      </p>
+                      <p className="text-sm text-slate-700">{item.label}</p>
+                      {!item.feasible && (
+                        <p className="text-xs font-medium uppercase tracking-[0.16em] text-amber-700">
+                          Etter avreise
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {roadmapCount === 0 ? (
             <Card className="border border-slate-200 bg-white/90 shadow-sm">
