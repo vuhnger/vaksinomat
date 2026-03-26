@@ -3,6 +3,8 @@
  * Krever at dev-serveren kjører: npm run dev
  */
 
+export {};
+
 const BASE_URL = process.env.TEST_BASE_URL ?? "http://localhost:3000";
 
 describe("GET /api/admin/flag-review", () => {
@@ -16,111 +18,66 @@ describe("GET /api/admin/flag-review", () => {
 });
 
 describe("PATCH /api/admin/flag-review", () => {
-  let pendingConsultationId: string;
-
-  beforeAll(async () => {
-    // Opprett en konsultasjon som krever legegjennomgang (gravid + Gulfeber-destinasjon)
-    const res = await fetch(`${BASE_URL}/api/consultation`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        birthYear: 1990,
-        isPregnant: true,
-        isImmunocompromised: false,
-        allergies: [],
-        destinations: [{ countryCode: "BR", countryName: "Brasil", isLayover: false }],
-        departureDate: "2027-08-01",
-        returnDate: "2027-08-15",
-        accommodationType: "hotel",
-        localContact: "minimal",
-        previousVaccinations: [],
-        nurseId: "test-nurse",
-      }),
-    });
-    const body = await res.json();
-    pendingConsultationId = body.id;
-  });
-
-  test("godkjenner en pending konsultasjon → 200", async () => {
+  test("returnerer 410 når review forsøkes", async () => {
     const res = await fetch(`${BASE_URL}/api/admin/flag-review`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        consultationId: pendingConsultationId,
+        consultationId: "test-consultation",
         action: "approve",
         doctorId: "test-doctor-1",
         doctorNote: "Ser greit ut, bekreftet av test",
       }),
     });
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(410);
     const body = await res.json();
-    expect(body.success).toBe(true);
+    expect(body.error).toContain("unavailable");
   });
 
-  test("avviser en konsultasjon → 200", async () => {
-    // Opprett en ny pending konsultasjon å avvise
-    const createRes = await fetch(`${BASE_URL}/api/consultation`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        birthYear: 1990,
-        isPregnant: true,
-        isImmunocompromised: false,
-        allergies: [],
-        destinations: [{ countryCode: "BR", countryName: "Brasil", isLayover: false }],
-        departureDate: "2027-09-01",
-        returnDate: "2027-09-15",
-        accommodationType: "hotel",
-        localContact: "minimal",
-        previousVaccinations: [],
-        nurseId: "test-nurse",
-      }),
-    });
-    const { id } = await createRes.json();
-
+  test("returnerer 410 også for reject", async () => {
     const res = await fetch(`${BASE_URL}/api/admin/flag-review`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        consultationId: id,
+        consultationId: "test-consultation",
         action: "reject",
         doctorId: "test-doctor-2",
         doctorNote: "Avvist av test",
       }),
     });
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(410);
     const body = await res.json();
-    expect(body.success).toBe(true);
+    expect(body.error).toContain("unavailable");
   });
 
-  test("returnerer 400 ved ugyldig action", async () => {
+  test("returnerer 410 ved ugyldig action siden endpointet er deaktivert", async () => {
     const res = await fetch(`${BASE_URL}/api/admin/flag-review`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        consultationId: pendingConsultationId,
+        consultationId: "test-consultation",
         action: "ugyldigAction",
         doctorId: "test-doctor",
       }),
     });
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(410);
     const body = await res.json();
-    expect(body.error).toBe("Validation error");
+    expect(body.error).toContain("unavailable");
   });
 
-  test("returnerer 400 ved manglende doctorId", async () => {
+  test("returnerer 410 ved manglende doctorId siden endpointet er deaktivert", async () => {
     const res = await fetch(`${BASE_URL}/api/admin/flag-review`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        consultationId: pendingConsultationId,
+        consultationId: "test-consultation",
         action: "approve",
       }),
     });
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(410);
   });
 });

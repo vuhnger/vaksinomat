@@ -1,9 +1,11 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { nb } from "date-fns/locale";
 import { ArrowDown, CalendarDays, MapPinned, ShieldCheck, Stethoscope } from "lucide-react";
-import { getConsultation } from "@/lib/audit/firestore-logger";
 import { DoctorReviewBanner } from "@/components/consultation/result/DoctorReviewBanner";
 import { VaccineCard } from "@/components/consultation/result/VaccineCard";
 import { MalariaCard } from "@/components/consultation/result/MalariaCard";
@@ -11,24 +13,65 @@ import { CopyJournalButton } from "@/components/consultation/result/CopyJournalB
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getVaccines } from "@/lib/data/loader";
+import { loadConsultationResult } from "@/lib/consultation-session";
+import type { RecommendationResult } from "@/lib/types";
 
 function getHumanReadableVaccineName(vaccineNameMap: Record<string, string>, vaccineId: string): string {
   return vaccineNameMap[vaccineId] ?? "Ukjent vaksine";
 }
 
-interface Props {
-  params: { id: string };
-}
+export default function ResultPage() {
+  const params = useParams<{ id: string }>();
+  const consultationId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const [result, setResult] = useState<RecommendationResult | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const vaccineNameMap = useMemo(
+    () => Object.fromEntries(getVaccines().map((v) => [v.id, v.displayNameNo])),
+    []
+  );
 
-export default async function ResultPage({ params }: Props) {
-  const consultation = await getConsultation(params.id);
+  useEffect(() => {
+    if (!consultationId) {
+      return;
+    }
 
-  if (!consultation || !consultation.result) {
-    notFound();
+    setResult(loadConsultationResult(consultationId));
+    setHasLoaded(true);
+  }, [consultationId]);
+
+  if (!hasLoaded) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef6ff_40%,#f8fafc_100%)]">
+        <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-4 py-10 text-sm text-muted-foreground">
+          Laster konsultasjon...
+        </main>
+      </div>
+    );
   }
 
-  const result = consultation.result;
-  const vaccineNameMap = Object.fromEntries(getVaccines().map((v) => [v.id, v.displayNameNo]));
+  if (!result) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef6ff_40%,#f8fafc_100%)]">
+        <main className="mx-auto flex min-h-screen max-w-2xl items-center px-4 py-10">
+          <Card className="w-full border border-slate-200 bg-white/95 shadow-sm">
+            <CardContent className="space-y-4 p-6 sm:p-8">
+              <div className="space-y-2">
+                <p className="text-sm font-medium uppercase tracking-[0.22em] text-sky-700">Ingen lagring aktiv</p>
+                <h1 className="text-2xl font-semibold tracking-tight">Fant ikke konsultasjonen</h1>
+                <p className="text-sm leading-6 text-muted-foreground sm:text-base">
+                  Denne deployen lagrer ikke konsultasjoner ennå. Resultatsiden virker etter innsending i samme nettleserfane.
+                </p>
+              </div>
+              <Link href="/consultation/new">
+                <Button>Start ny konsultasjon</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
   const departureFormatted = format(parseISO(result.patientData.departureDate), "d. MMMM yyyy", {
     locale: nb,
   });

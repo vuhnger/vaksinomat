@@ -9,6 +9,7 @@ import { Step3Exposure } from "@/components/consultation/wizard/Step3Exposure";
 import { Step4VaccineHistory } from "@/components/consultation/wizard/Step4VaccineHistory";
 import { Step5Summary } from "@/components/consultation/wizard/Step5Summary";
 import { getCandidateVaccineIds } from "@/lib/data/client-candidates";
+import { saveConsultationResult } from "@/lib/consultation-session";
 import type { PatientData } from "@/lib/types";
 
 const STEPS = [
@@ -71,7 +72,8 @@ export default function NewConsultationPage() {
         throw new Error(err.error ?? "Kunne ikke opprette konsultasjon");
       }
 
-      const { id } = await res.json();
+      const { id, result } = await res.json();
+      saveConsultationResult(id, result);
       router.push(`/consultation/${id}/result`);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "En feil oppstod");

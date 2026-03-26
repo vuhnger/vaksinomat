@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { saveConsultation } from "@/lib/audit/firestore-logger";
 import { runRecommendationEngine } from "@/lib/engines/recommendation-engine";
 import type { PatientData } from "@/lib/types";
 import { randomUUID } from "crypto";
@@ -43,9 +42,6 @@ export async function POST(request: NextRequest) {
 
     // Run recommendation engine – pure in-memory, instant
     const result = runRecommendationEngine(id, patientData, {});
-
-    // Single Firestore write (create + result combined)
-    await saveConsultation(id, patientData, result, patientData.nurseId);
 
     return NextResponse.json({ id, result }, { status: 201 });
   } catch (error) {

@@ -3,6 +3,8 @@
  * Krever at dev-serveren kjører: npm run dev
  */
 
+export {};
+
 const BASE_URL = process.env.TEST_BASE_URL ?? "http://localhost:3000";
 
 const validPayload = {
@@ -125,20 +127,16 @@ describe("GET /api/consultation/:id", () => {
     createdId = body.id;
   });
 
-  test("henter lagret konsultasjon → 200", async () => {
+  test("returnerer 410 fordi konsultasjoner ikke persisteres", async () => {
     const res = await fetch(`${BASE_URL}/api/consultation/${createdId}`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(410);
 
-    const consultation = await res.json();
-    expect(consultation.id).toBe(createdId);
-    expect(consultation.patientData).toBeDefined();
-    expect(consultation.result).toBeDefined();
-    expect(["approved", "pending_review"]).toContain(consultation.status);
-    expect(consultation.createdAt).toBeDefined();
+    const body = await res.json();
+    expect(body.error).toContain(createdId);
   });
 
-  test("returnerer 404 for ukjent id", async () => {
+  test("returnerer 410 også for ukjent id", async () => {
     const res = await fetch(`${BASE_URL}/api/consultation/finnes-ikke-abc-xyz-000`);
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(410);
   });
 });
